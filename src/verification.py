@@ -3,11 +3,15 @@ import argparse
 import os
 from typing import Dict, List
 
+import sys
+import os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 from src.evaluate import extract_predicted_answer, is_correct
 from src.prompting import MockModel, HFModel
 
 
-# --- Verification strategies ---
+# Verification strategies
 
 def _build_verification_prompt(question: str, proposed: object) -> str:
     return (
@@ -74,7 +78,7 @@ def _verify_heuristic(records: List[Dict]) -> List[Dict]:
     return verified
 
 
-# --- Main pipeline ---
+# Main pipeline
 
 def run_verification(input_path: str,
                      output_path: str = "results/verified_preds.json",

@@ -5,7 +5,7 @@ import os
 from typing import Dict, List, Optional
 
 
-# --- Answer extraction ---
+# Answer extraction
 
 def extract_predicted_answer(text: Optional[str]) -> Optional[float]:
     """Pull the last number from a model output string.
@@ -39,7 +39,7 @@ def extract_ground_truth(text: Optional[str]) -> Optional[float]:
     return extract_predicted_answer(text)
 
 
-# --- Scoring ---
+# Scoring
 
 def is_correct(pred_text: str, gold_text: str, tol: float = 1e-5) -> bool:
     """True when the predicted number matches the gold number within tolerance."""
@@ -58,7 +58,7 @@ def exact_match_accuracy(predictions: List[str], ground_truths: List[str]) -> fl
     return correct / len(predictions)
 
 
-# --- File-level evaluation ---
+# File-level evaluation
 
 def evaluate_predictions_file(path: str) -> Dict:
     """Load a predictions JSON and compute + print accuracy.

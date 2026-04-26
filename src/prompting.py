@@ -9,7 +9,7 @@ from datasets import load_dataset
 from src.evaluate import extract_predicted_answer, is_correct
 
 
-# --- Prompt templates ---
+# Prompt templates
 
 def _build_zero_shot_prompt(question: str) -> str:
     return (
@@ -37,7 +37,7 @@ _PROMPT_BUILDERS = {
 }
 
 
-# --- Model wrappers ---
+# Model wrappers
 
 class MockModel:
     """Returns random numbers so the pipeline can run without a GPU."""
@@ -68,7 +68,7 @@ class HFModel:
         inputs = self.tokenizer(prompt, return_tensors="pt",
                                 truncation=True, max_length=512)
         with torch.no_grad():
-            out = self.model.generate(
+            out = self.model.generate( # type: ignore
                 **inputs,
                 max_new_tokens=self._max_new_tokens,
                 do_sample=False,
@@ -78,7 +78,7 @@ class HFModel:
         return self.tokenizer.decode(new_ids, skip_special_tokens=True)
 
 
-# --- Main pipeline ---
+# Main pipeline
 
 def run_prompting(mode: str = "mock",
                   prompt_type: str = "zero_shot",
@@ -110,7 +110,8 @@ def run_prompting(mode: str = "mock",
     build_prompt = _PROMPT_BUILDERS[prompt_type]
 
     records: List[Dict] = []
-    for i, ex in enumerate(test_sub):
+    for i, ex_raw in enumerate(test_sub):
+        ex = dict(ex_raw) # type: ignore
         prompt = build_prompt(ex["question"])
         raw_out = model.generate(prompt)
         pred = extract_predicted_answer(raw_out)

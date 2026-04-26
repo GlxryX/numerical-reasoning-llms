@@ -6,10 +6,14 @@ from typing import List
 
 from datasets import load_dataset
 
+import sys
+import os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 from src.evaluate import extract_ground_truth, exact_match_accuracy
 
 
-# --- Baseline strategies ---
+# Baseline strategies
 
 def _majority_baseline(train_answers: List[float], n: int) -> List[str]:
     """Always predict the single most common answer from training."""
@@ -26,7 +30,7 @@ def _random_baseline(train_answers: List[float], n: int, seed: int = 42) -> List
     return [str(rng.choice(train_answers)) for _ in range(n)]
 
 
-# --- Main pipeline ---
+# Main pipeline
 
 def run_baseline(subset_size: int = 100,
                  output_path: str = "results/baseline_preds.json",
@@ -51,7 +55,8 @@ def run_baseline(subset_size: int = 100,
 
     # collect numeric answers from training split
     train_answers: List[float] = []
-    for ex in train:
+    for ex_raw in train: # type: ignore
+        ex = dict(ex_raw) # type: ignore
         val = extract_ground_truth(ex["answer"])
         if val is not None:
             train_answers.append(val)
@@ -61,13 +66,14 @@ def run_baseline(subset_size: int = 100,
     else:
         preds = _majority_baseline(train_answers, n)
 
-    golds = [ex["answer"] for ex in test_sub]
+    golds = [dict(ex)["answer"] for ex in test_sub] # type: ignore
     acc = exact_match_accuracy(preds, golds)
     print(f"Baseline ({baseline_type}) accuracy: {acc:.4f}")
 
     # save predictions
     records = []
-    for i, (ex, pred) in enumerate(zip(test_sub, preds)):
+    for i, (ex_raw, pred) in enumerate(zip(test_sub, preds)): # type: ignore
+        ex = dict(ex_raw) # type: ignore
         records.append({
             "index": i,
             "question": ex["question"],
