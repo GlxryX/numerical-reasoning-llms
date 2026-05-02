@@ -4,3 +4,5 @@ torch
 jupyter
 matplotlib
 pandas
+python-dotenv
+google-genai

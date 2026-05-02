@@ -15,7 +15,8 @@ def prepare_finetuning_data(output_path: str = "results/finetuning_data.jsonl") 
     train = load_dataset("gsm8k", "main")["train"]
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     with open(output_path, "w") as f:
-        for ex in train:
+        for ex_raw in train:
+            ex = dict(ex_raw)
             line = {"input": f"Solve: {ex['question']}", "target": ex["answer"]}
             f.write(json.dumps(line) + "\n")
     print(f"Wrote {len(train)} examples -> {output_path}")
